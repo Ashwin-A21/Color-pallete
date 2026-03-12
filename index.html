@@ -28,7 +28,7 @@
         * { cursor: none !important; box-sizing: border-box; }
 
         body {
-            background-color: #0c0c0e;
+            background-color: #ffffff; /* Switched to White */
             color: var(--text-main);
             font-family: "Space Mono", monospace;
             display: flex;
@@ -44,18 +44,18 @@
             content: "";
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='nf'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23nf)' opacity='0.06'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='nf'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23nf)' opacity='0.04'/%3E%3C/svg%3E");
             pointer-events: none;
             z-index: 50;
             mix-blend-mode: multiply;
         }
 
         #cursor-dot {
-            width: 6px; height: 6px; background: #fff;
+            width: 6px; height: 6px; background: #000;
             position: fixed; pointer-events: none; z-index: 10000; border-radius: 50%;
         }
         #cursor-outline {
-            width: 36px; height: 36px; border: 1.5px solid rgba(255,255,255,0.4);
+            width: 36px; height: 36px; border: 1.5px solid rgba(0,0,0,0.2);
             position: fixed; pointer-events: none; z-index: 9999; border-radius: 50%;
             transition: transform 0.1s linear, width 0.3s, height 0.3s;
         }
@@ -77,7 +77,7 @@
             display: grid;
             grid-template-columns: 320px 1fr;
             overflow: hidden;
-            box-shadow: 0 40px 80px rgba(0,0,0,0.5);
+            box-shadow: 0 40px 80px rgba(0,0,0,0.1);
             position: relative;
         }
 
@@ -93,9 +93,9 @@
         h1 {
             font-family: "Playfair Display", serif;
             font-size: 44px;
-            line-height: 1;
+            line-height: 1.1;
             font-weight: 600;
-            margin-bottom: 24px;
+            margin-bottom: 48px; /* High Separation */
             outline: none;
         }
 
@@ -151,14 +151,27 @@
             transform: scale(1.03) translateZ(40px) !important;
             z-index: 20;
             border-color: var(--accent);
-            box-shadow: 0 25px 60px -15px rgba(0,0,0,0.3);
+            box-shadow: 0 25px 60px -15px rgba(0,0,0,0.2);
         }
 
         .color-block {
             width: 140px;
             height: 100%;
             transition: background 0.5s;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
+
+        /* Tune Icon overlay on board swatches */
+        .tune-icon {
+            opacity: 0;
+            transition: opacity 0.3s;
+            color: white;
+            mix-blend-mode: difference;
+        }
+        .swatch-row:hover .tune-icon { opacity: 0.6; }
 
         .swatch-info {
             padding: 0 25px;
@@ -226,6 +239,7 @@
             top: -20px; left: -20px;
             width: 100px; height: 100px;
             background: none; border: none;
+            cursor: pointer !important;
         }
 
         .btn {
@@ -247,15 +261,15 @@
         .nav-icon:hover { border-color: var(--accent); color: var(--accent); transform: translateX(5px); }
 
         .toast {
-            @apply fixed bottom-32 left-1/2 -translate-x-1/2 bg-white text-black px-8 py-3 rounded-full text-[10px] font-black tracking-widest shadow-2xl transition-all opacity-0 translate-y-10 z-[1000];
+            @apply fixed bottom-32 left-1/2 -translate-x-1/2 bg-zinc-900 text-white px-8 py-3 rounded-full text-[10px] font-black tracking-widest shadow-2xl transition-all opacity-0 translate-y-10 z-[1000];
         }
 
         footer {
-            @apply w-full text-center py-6 mt-auto text-zinc-600 text-[10px] font-bold uppercase tracking-[0.2em];
-            border-top: 1px solid rgba(255,255,255,0.05);
+            @apply w-full text-center py-6 mt-auto text-zinc-400 text-[10px] font-bold uppercase tracking-[0.2em];
+            border-top: 1px solid rgba(0,0,0,0.05);
         }
-        footer a { transition: color 0.3s; }
-        footer a:hover { color: white; }
+        footer a { color: var(--accent); transition: opacity 0.3s; }
+        footer a:hover { opacity: 0.7; }
 
         @media (max-width: 1000px) {
             #infographic-container { grid-template-columns: 1fr; height: auto; max-height: none; }
@@ -391,12 +405,16 @@
             currentColors.forEach((color, i) => {
                 const dynamicName = getColorName(color);
                 
-                // Swatch
+                // Swatch Row (On Board)
                 const row = document.createElement('div');
                 row.id = `row-${i}`;
                 row.className = `swatch-row c${i+1}`;
                 row.innerHTML = `
-                    <div class="color-block" style="background-color: ${color}"></div>
+                    <div class="color-block" style="background-color: ${color}">
+                        <div class="tune-icon">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+                        </div>
+                    </div>
                     <div class="swatch-info">
                         <span contenteditable="true" class="font-bold">${dynamicName}</span>
                         <span class="hex-code mono">${color.toUpperCase()}</span>
@@ -404,11 +422,27 @@
                 `;
                 card.appendChild(row);
 
-                // Picker
+                // Picker Controller (In Panel)
                 const pickerCont = document.createElement('div');
                 pickerCont.className = 'custom-picker';
-                pickerCont.innerHTML = `<input type="color" value="${color}" oninput="syncColor(${i}, this.value)">`;
+                pickerCont.id = `picker-wrap-${i}`;
+                const realInput = document.createElement('input');
+                realInput.type = 'color';
+                realInput.value = color;
+                realInput.oninput = (e) => syncColor(i, e.target.value);
+                pickerCont.appendChild(realInput);
                 
+                // Selection Logic (Bidirectional)
+                row.onclick = () => realInput.click();
+                row.onmouseenter = () => {
+                    row.classList.add('active');
+                    pickerCont.classList.add('active');
+                };
+                row.onmouseleave = () => {
+                    row.classList.remove('active');
+                    pickerCont.classList.remove('active');
+                };
+
                 pickerCont.onmouseenter = () => {
                     row.classList.add('active');
                     pickerCont.classList.add('active');
@@ -420,7 +454,7 @@
                 bank.appendChild(pickerCont);
             });
 
-            // Meta
+            // Meta Analysis
             const baseRgb = hexToRgb(currentColors[0]);
             const lum = getLuminance(baseRgb.r, baseRgb.g, baseRgb.b);
             document.getElementById('lum-display').innerText = lum.toFixed(2);
@@ -473,7 +507,7 @@
             return `#${f(0)}${f(8)}${f(4)}`;
         }
 
-        // --- FEATURES ---
+        // --- SPATIAL IMAGE EXTRACTION ---
         document.getElementById('imageInput').onchange = (e) => {
             const file = e.target.files[0];
             const reader = new FileReader();
@@ -482,15 +516,22 @@
                 img.onload = () => {
                     const canvas = document.getElementById('procCanvas');
                     const ctx = canvas.getContext('2d');
-                    canvas.width = 100; canvas.height = 100;
-                    ctx.drawImage(img, 0, 0, 100, 100);
-                    const data = ctx.getImageData(0,0,100,100).data;
+                    canvas.width = 150; canvas.height = 150;
+                    ctx.drawImage(img, 0, 0, 150, 150);
+                    const data = ctx.getImageData(0,0,150,150).data;
+                    
+                    // Diversity Grid Sampling (Weighted by spatial contrast)
                     const palette = [];
-                    const step = Math.floor(data.length / 4 / 6);
-                    for(let i=1; i<=5; i++) {
-                        const idx = i * step * 4;
-                        palette.push("#" + ((1 << 24) + (data[idx] << 16) + (data[idx+1] << 8) + data[idx+2]).toString(16).slice(1));
-                    }
+                    const sectors = [
+                        {x: 25, y: 25}, {x: 75, y: 25}, {x: 50, y: 50}, 
+                        {x: 25, y: 75}, {x: 75, y: 75}
+                    ];
+                    
+                    sectors.forEach(s => {
+                        const idx = (s.y * 150 + s.x) * 4;
+                        palette.push(rgbToHex(data[idx], data[idx+1], data[idx+2]));
+                    });
+                    
                     currentColors = palette;
                     updateUI();
                     showToast("IMAGE ARCHITECTED");
@@ -500,6 +541,11 @@
             reader.readAsDataURL(file);
         };
 
+        function rgbToHex(r, g, b) {
+            return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+        }
+
+        // --- HARMONY & AI ---
         function applyHarmony(type) {
             const base = hexToHsl(currentColors[0]);
             document.getElementById('rule-display').innerText = type.toUpperCase();
@@ -545,16 +591,16 @@
 
         async function savePalette() { showToast("SAVE VAULT INITIATED"); }
 
-        // --- CURSOR ---
+        // --- INTERACTION ---
         const cursorDot = document.getElementById("cursor-dot");
         const cursorOutline = document.getElementById("cursor-outline");
         window.addEventListener("mousemove", (e) => {
             cursorDot.style.left = `${e.clientX}px`;
             cursorDot.style.top = `${e.clientY}px`;
             cursorOutline.animate({ left: `${e.clientX}px`, top: `${e.clientY}px` }, { duration: 400, fill: "forwards" });
-            if(e.target.closest('button, input, [contenteditable], label, .custom-picker')) {
+            if(e.target.closest('button, input, [contenteditable], label, .custom-picker, .swatch-row')) {
                 cursorOutline.style.width = '60px'; cursorOutline.style.height = '60px';
-                cursorOutline.style.background = 'rgba(255,255,255,0.1)';
+                cursorOutline.style.background = 'rgba(0,0,0,0.05)';
             } else {
                 cursorOutline.style.width = '36px'; cursorOutline.style.height = '36px';
                 cursorOutline.style.background = 'transparent';
